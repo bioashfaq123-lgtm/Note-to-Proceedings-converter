@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Note → Proceeding | Agricultural Polytechnic, Jagtial</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <img id="logo" alt="University logo">
+    <div>
+      <strong>Note → Proceeding</strong>
+      <span>Agricultural Polytechnic, Jagtial</span>
+    </div>
+  </div>
+  <button class="ghost" id="btnSettings" type="button">⚙ Office settings</button>
+</header>
+
+<!-- ============ STEP 1 : LANDING / UPLOAD ============ -->
+<main id="viewUpload">
+  <section class="hero">
+    <h1>Turn a Note into a Proceeding<br>in under a minute</h1>
+    <p>Upload the Note (.docx) submitted to the Principal. The page reads the date, items, amount and
+       head of account, lets you check everything, and gives you the Proceeding as a Word file in the
+       office format.</p>
+
+    <label class="drop" id="drop" tabindex="0">
+      <input type="file" id="file" accept=".docx" hidden>
+      <div class="drop-icon">📄</div>
+      <div class="drop-title">Drop the Note here, or click to choose</div>
+      <div class="drop-sub">Word file (.docx) · processed on this computer, nothing is uploaded anywhere</div>
+    </label>
+    <div id="uploadError" class="alert error" hidden></div>
+  </section>
+
+  <section class="steps">
+    <div class="step"><b>1</b><h3>Upload the Note</h3><p>Items table, amount, note date, signatory and head of account are read automatically.</p></div>
+    <div class="step"><b>2</b><h3>Check &amp; complete</h3><p>Add what a Note never says — Proc. No., supplier, references — and see a live preview.</p></div>
+    <div class="step"><b>3</b><h3>Download</h3><p>Get the Proceeding (.docx) with amount in words, table, head of account and CC list.</p></div>
+  </section>
+</main>
+
+<!-- ============ STEP 2 : REVIEW ============ -->
+<main id="viewReview" hidden>
+  <div class="bar">
+    <div>
+      <h2>Review the Proceeding</h2>
+      <span class="muted" id="fileName"></span>
+    </div>
+    <div class="bar-actions">
+      <button class="ghost" id="btnAnother" type="button">↺ Upload another Note</button>
+      <button class="primary" id="btnDownload" type="button">⬇ Download Proceeding (.docx)</button>
+    </div>
+  </div>
+
+  <div id="warnings"></div>
+
+  <div class="layout">
+    <form id="form" autocomplete="off" onsubmit="return false">
+
+      <fieldset>
+        <legend>1 · Proceeding details</legend>
+        <div class="grid3">
+          <label>Proc. No.<input data-k="procNo" inputmode="numeric" placeholder="e.g. 248"></label>
+          <label>Number suffix<input data-k="procSuffix"></label>
+          <label>Proceeding date<input type="date" id="procDateInput"></label>
+        </div>
+        <label>Present<input data-k="present"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>2 · Read from the Note</legend>
+        <div class="grid3">
+          <label>Note date<input data-k="noteDate" placeholder="dd.mm.yyyy"></label>
+          <label class="span2">Note submitted by (designation)<input data-k="authorDesignation"></label>
+        </div>
+        <label>Table column heading
+          <select data-k="tableHeading"><option>Particulars</option><option>Product Name</option></select>
+        </label>
+        <div class="items-wrap">
+          <table id="itemsTable">
+            <thead><tr><th>#</th><th>Item</th><th>Qty</th><th>Rate (Rs.)</th><th>Amount (Rs.)</th><th></th></tr></thead>
+            <tbody></tbody>
+            <tfoot><tr><td colspan="4" class="right"><b>Total (auto)</b></td><td id="totalCell"></td><td></td></tr></tfoot>
+          </table>
+        </div>
+        <button class="small" id="btnAddItem" type="button">+ Add item</button>
+      </fieldset>
+
+      <fieldset>
+        <legend>3 · What the Note does not say</legend>
+        <label>Purpose (used in the Subject and in the order)
+          <input data-k="purpose" placeholder="e.g. Purchase of Plant Protection chemicals for Lemon orchard">
+        </label>
+        <label>Supplier / firm
+          <input data-k="vendor" list="vendorList" placeholder="e.g. M/s. Rythu Seva Kendram, Jagtial">
+          <datalist id="vendorList"></datalist>
+        </label>
+        <label>Sanction accorded to<input data-k="sanctionTo"></label>
+        <div class="grid2">
+          <label>Head of account — line 1<input data-k="headCode"></label>
+          <label>Head of account — line 2<input data-k="headFund" placeholder="e.g. Revolving Fund"></label>
+        </div>
+        <label class="check"><input type="checkbox" data-k="includePayment"> Add the line “The payment of Rs. … shall be made to …”</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>4 · References &amp; copies</legend>
+        <label>Delegation of powers clause<input data-k="delegation"></label>
+        <div id="refsList"></div>
+        <button class="small" id="btnAddRef" type="button">+ Add reference</button>
+        <p class="hint">The Note itself is added automatically as the last reference.</p>
+        <label>“To” line(s) <textarea data-k="toLinesText" rows="2"></textarea></label>
+        <label>CC / Copy lines <textarea data-k="ccLinesText" rows="3"></textarea></label>
+        <button class="small" id="btnSaveDefaults" type="button">💾 Save references, CC list &amp; settings as my defaults</button>
+      </fieldset>
+
+      <details>
+        <summary>5 · Edit the exact wording (optional)</summary>
+        <label>Subject <button class="link" data-reset="subject" type="button">reset to automatic</button>
+          <textarea id="subjectBox" rows="3"></textarea></label>
+        <label>Order paragraph <button class="link" data-reset="body" type="button">reset to automatic</button>
+          <textarea id="bodyBox" rows="6"></textarea></label>
+        <p class="hint">Use **double asterisks** around words to make them bold.</p>
+      </details>
+    </form>
+
+    <aside class="preview-col">
+      <div class="preview-head">Live preview <span class="muted">(Word output follows this layout)</span></div>
+      <div id="preview" class="paper-wrap"></div>
+    </aside>
+  </div>
+</main>
+
+<!-- ============ SETTINGS DIALOG ============ -->
+<dialog id="dlgSettings">
+  <form method="dialog" id="settingsForm">
+    <h3>Office settings</h3>
+    <p class="hint">These appear on every Proceeding. Saved in this browser only.</p>
+    <label>University heading<input data-s="university"></label>
+    <label>Office title<input data-s="officeTitle"></label>
+    <label>Office address line<input data-s="officeAddr"></label>
+    <label>Office name under “PRINCIPAL”<input data-s="officeShort"></label>
+    <label>“Present:” name<input data-s="present"></label>
+    <label>Proc. No. suffix<input data-s="procSuffix"></label>
+    <label>Standard head-of-account line 1<input data-s="headCode"></label>
+    <label>Delegation of powers clause<input data-s="delegation"></label>
+    <menu>
+      <button type="button" class="ghost" id="btnResetSettings">Restore factory settings</button>
+      <button value="cancel" class="ghost">Cancel</button>
+      <button value="ok" class="primary" id="btnSaveSettings">Save</button>
+    </menu>
+  </form>
+</dialog>
+
+<div id="toast" hidden></div>
+
+<script src="vendor/jszip.min.js"></script>
+<script src="vendor/docx.iife.js"></script>
+<script src="js/logo.js"></script>
+<script src="js/numwords.js"></script>
+<script src="js/parser.js"></script>
+<script src="js/generator.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
